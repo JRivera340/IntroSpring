@@ -2,7 +2,7 @@ package com.MiProyecto.proyecto.controller;
 
 import com.MiProyecto.proyecto.model.Conductor;
 import com.MiProyecto.proyecto.service.ConductorService;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+
 
 import org.springframework.stereotype.Controller; 
 import org.springframework.ui.Model; 
@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes; // Para m
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @Controller

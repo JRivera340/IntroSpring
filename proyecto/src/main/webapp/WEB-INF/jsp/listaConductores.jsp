@@ -27,7 +27,10 @@
         <p class="mensaje-error">${error}</p>
     </c:if>
 
-    <a href="<c:url value='/conductores/nuevo'/>" class="btn-nuevo">Agregar Nuevo Conductor</a>
+    <div class="action-buttons"> <%-- Envuelve los botones de acción --%>
+            <a href="<c:url value='/'/>" class="btn btn-primary">Volver al Inicio</a> <%-- ¡AQUÍ ESTÁ EL BOTÓN! --%>
+            <a href="<c:url value='/conductores/nuevo'/>" class="btn-nuevo">Agregar Nuevo Conductor</a>
+    </div>
 
     <c:choose>
         <c:when test="${not empty conductores}">

@@ -18,11 +18,8 @@ public class VehiculoService {
 
     private ConductorService conductorService; // Esta dependencia será inyectada
 
-    // Constructor para inyección de dependencias. Spring buscará un ConductorService para inyectar aquí.
-    public VehiculoService(ConductorService conductorService) {
-        this.conductorService = conductorService;
-    }
-
+   
+    
 
     //Permite la inyeccion de dependencias
     public void setConductorService(ConductorService conductorService){
@@ -47,41 +44,80 @@ public class VehiculoService {
         }
     }
 
-     // Agregar un vehículo A UN CONDUCTOR
-    public boolean agregarVehiculoAConductor(Vehiculo nuevVehiculo, String numeroIdentificacionConductor){
-        if (nuevVehiculo == null && numeroIdentificacionConductor == null) {
+     // --- El método problemático: ASIGNAR un VEHÍCULO EXISTENTE a un CONDUCTOR ---
+    // Este método es el que el controlador espera cuando llama:
+    // vehiculoService.asignarVehiculoAConductor(placa, numeroIdentificacionConductor);
+    public boolean asignarVehiculoAConductor(String placaVehiculo, String numeroIdentificacionConductor) {
+        if (placaVehiculo == null || placaVehiculo.trim().isEmpty() ||
+            numeroIdentificacionConductor == null || numeroIdentificacionConductor.trim().isEmpty()) {
             return false;
         }
 
-        //Guarda el vehiculo en el hashmap
-        registrarVehiculosGlobalmente(nuevVehiculo);
-
-        if (conductorService == null) {
-            System.err.println("Error: ConductorService no ha sido inyectado en VehiculoService.");
-            return false;
-        }
+        Optional<Vehiculo> vehiculoOpt = obtenerVehiculoPorPlaca(placaVehiculo); // Obtener el vehículo EXISTENTE
         Optional<Conductor> conductorOpt = conductorService.obtenerConductorPorIdentificacion(numeroIdentificacionConductor);
 
-        //Si esta presente sigue con el codigo y con la funcion .get() en conductorOpt se extrae el objeto.
-        if (conductorOpt.isPresent()) {
+        if (vehiculoOpt.isPresent() && conductorOpt.isPresent()) {
+            Vehiculo vehiculoParaAsignar = vehiculoOpt.get(); // El vehículo a asignar
+            Conductor conductorObjetivo = conductorOpt.get(); // El conductor al que se asignará
 
-            Conductor conductor = conductorOpt.get();
-            
-            //Se agrega el vehiculo al conductor
-            conductor.agregarVehiculo(nuevVehiculo);
-            System.out.println("Se ha agregado el vehiculo "+nuevVehiculo.getPlaca()+" Al conductor "+conductor.getNombre());
+            // Validar que el vehículo no esté ya asignado a otro conductor
+            // Para hacer esto, necesitamos buscar el vehículo en las listas de TODOS los conductores.
+            for (Conductor c : conductorService.obtenerTodosLosConductores()) {
+                if (c.getVehiculos().stream().anyMatch(v -> v.getPlaca().equalsIgnoreCase(placaVehiculo))) {
+                    // Si el vehículo está en la lista de CUALQUIER conductor, lo desvinculamos primero.
+                    // Esto evita que un mismo vehículo esté asignado a múltiples conductores.
+                    if (!c.getNumeroIdentificacion().equalsIgnoreCase(conductorObjetivo.getNumeroIdentificacion())) {
+                        // Si está asignado a un conductor DIFERENTE al objetivo, lo desasignamos.
+                        c.eliminarVehiculo(placaVehiculo);
+                        System.out.println("Vehículo " + placaVehiculo + " desasignado de su conductor anterior: " + c.getNombre());
+                    } else {
+                        // Si ya está asignado al conductor objetivo, no hacemos nada y consideramos exitoso
+                        System.out.println("El vehículo " + placaVehiculo + " ya está asignado al conductor " + conductorObjetivo.getNombre());
+                        return true;
+                    }
+                }
+            }
+
+            // Finalmente, agrega el vehículo a la lista del conductor objetivo
+            conductorObjetivo.agregarVehiculo(vehiculoParaAsignar);
+            System.out.println("Vehículo " + placaVehiculo + " asignado a " + conductorObjetivo.getNombre());
             return true;
-        }else {
-            System.out.println("Error al encontrar el Conductor"+numeroIdentificacionConductor);
+        } else {
+            System.out.println("Error al asignar vehículo: Vehículo (" + placaVehiculo + ") o Conductor (" + numeroIdentificacionConductor + ") no encontrado.");
+            return false;
+        }
+    }
+
+         // Método para desasignar un vehículo de CUALQUIER conductor
+    public boolean desasignarVehiculoDeConductor(String placaVehiculo) {
+        if (placaVehiculo == null || placaVehiculo.trim().isEmpty()) {
             return false;
         }
 
-    
+        // Buscamos en las listas de vehículos de TODOS los conductores
+        for (Conductor conductor : conductorService.obtenerTodosLosConductores()) {
+            if (conductor.eliminarVehiculo(placaVehiculo)) {
+                System.out.println("Vehículo " + placaVehiculo + " desasignado del conductor " + conductor.getNombre());
+                return true; // Se encontró y se eliminó de un conductor
+            }
+        }
+        System.out.println("Vehículo " + placaVehiculo + " no estaba asignado a ningún conductor o no se encontró.");
+        return false;
     }
 
     // Método para agregar un vehículo al registro general sin asignarlo a un conductor
-    public void registrarVehiculo(Vehiculo vehiculo){
-        registrarVehiculosGlobalmente(vehiculo);
+    public Boolean registrarVehiculo(Vehiculo vehiculo){
+        if (vehiculo == null || vehiculo.getPlaca().trim().isEmpty()) {
+            return false;
+        }
+        String idVehiculo = vehiculo.getPlaca().trim().toUpperCase();
+        if (vehiculosRegistrados.containsKey(idVehiculo)) {
+            System.out.println("Este vehiculo ya ha sido registrado");
+            return false;
+        }
+        vehiculosRegistrados.put(idVehiculo, vehiculo);
+        System.out.println("Vehiculo "+ vehiculo.getPlaca()+" Agregado");
+        return true;
     }
 
     // Eliminar un vehículo específico usando la placa

@@ -1,5 +1,8 @@
 package com.MiProyecto.proyecto.model;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class Vehiculo {
     private String id;
     private String placa;
@@ -9,7 +12,10 @@ public class Vehiculo {
     private String marca;
     private int modeloAno; 
 
-    
+    public Vehiculo() {
+        this.id = UUID.randomUUID().toString(); // Siempre genera un ID único al crear el objeto vacío
+    }
+
     public Vehiculo(String id, String placa, int cilindraje, String tipoCombustible, String numeroMotor, String marca,
                     int modeloAno) {
         this.id = id;
