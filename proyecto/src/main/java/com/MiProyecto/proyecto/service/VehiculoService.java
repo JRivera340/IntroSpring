@@ -66,6 +66,7 @@ public class VehiculoService {
         if (conductorOpt.isPresent()) {
 
             Conductor conductor = conductorOpt.get();
+            
             //Se agrega el vehiculo al conductor
             conductor.agregarVehiculo(nuevVehiculo);
             System.out.println("Se ha agregado el vehiculo "+nuevVehiculo.getPlaca()+" Al conductor "+conductor.getNombre());
