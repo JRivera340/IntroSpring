@@ -1,6 +1,5 @@
 package com.MiProyecto.proyecto.model;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class Vehiculo {

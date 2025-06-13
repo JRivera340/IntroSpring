@@ -1,7 +1,6 @@
 package com.MiProyecto.proyecto.controller;
 
 import com.MiProyecto.proyecto.model.Conductor;
-import com.MiProyecto.proyecto.model.Vehiculo;
 import com.MiProyecto.proyecto.service.ConductorService;
 
 
