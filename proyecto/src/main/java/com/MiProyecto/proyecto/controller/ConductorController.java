@@ -1,6 +1,7 @@
 package com.MiProyecto.proyecto.controller;
 
 import com.MiProyecto.proyecto.model.Conductor;
+import com.MiProyecto.proyecto.model.Vehiculo;
 import com.MiProyecto.proyecto.service.ConductorService;
 
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute; // Para vincular 
 import org.springframework.web.bind.annotation.PathVariable; // Para extraer variables de la URL
 import org.springframework.web.bind.annotation.PostMapping; // Para mapear peticiones HTTP POST
 import org.springframework.web.bind.annotation.RequestMapping; // Para mapear una URL base para el controlador
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // Para mensajes flash en redirecciones
 
 import java.util.List;
@@ -65,6 +67,21 @@ public class ConductorController {
     public String mostrarFormularioConductor(Model model) {
         model.addAttribute("conductor", new Conductor()); // Ahora con el constructor vacío
         return "formularioConductor";
+    }
+
+    @GetMapping("/buscar")
+    public String buscarVehiculoPorPlaca(@RequestParam("idConductor") String idConductor, Model model, RedirectAttributes redirectAttributes) {
+
+
+        Optional<Conductor> conductorOpt = conductorService.obtenerConductorPorIdentificacion(idConductor);
+        
+        if (conductorOpt.isPresent()) {
+            return "redirect:/conductores/" + conductorOpt.get().getNumeroIdentificacion();
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Conductor con ID: " + idConductor + " no encontrado.");
+            return "redirect:/conductores"; // Si no se encuentra, redirige de vuelta a la lista de vehículos con un mensaje de error
+        }
+        
     }
     
 

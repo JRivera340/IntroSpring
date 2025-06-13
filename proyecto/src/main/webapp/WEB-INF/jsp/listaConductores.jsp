@@ -27,6 +27,17 @@
         <p class="mensaje-error">${error}</p>
     </c:if>
 
+    <div class="search-form-section" style="margin-bottom: 30px; padding: 20px; background-color: #e9ecef; border-radius: 8px;">
+            <h2>Buscar Vehículo por Placa</h2>
+            <form action="<c:url value='/conductores/buscar'/>" method="get">
+                <div class="form-group">
+                    <label for="idBusqueda">ID del conductor:</label>
+                    <input type="text" id="idBusqueda" name="idConductor" placeholder="Ingrese el ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Buscar Conductor</button>
+            </form>
+        </div>
+
     <div class="action-buttons"> <%-- Envuelve los botones de acción --%>
             <a href="<c:url value='/'/>" class="btn btn-primary">Volver al Inicio</a> <%-- ¡AQUÍ ESTÁ EL BOTÓN! --%>
             <a href="<c:url value='/conductores/nuevo'/>" class="btn-nuevo">Agregar Nuevo Conductor</a>
