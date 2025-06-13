@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+
 @Controller
 @RequestMapping("/vehiculos") // Todas las rutas de este controlador comenzarán con /vehiculos
 public class VehiculoController {
@@ -39,6 +40,22 @@ public class VehiculoController {
         model.addAttribute("conductoresDisponibles", conductorService.obtenerTodosLosConductores()); 
         return "listaVehiculos";
     }
+
+    @GetMapping("/buscar")
+    public String buscarVehiculoPorPlaca(@RequestParam("placa") String placa, Model model, RedirectAttributes redirectAttributes) {
+
+
+        Optional<Vehiculo> vehiculoOpt = vehiculoService.obtenerVehiculoPorPlaca(placa);
+        
+        if (vehiculoOpt.isPresent()) {
+            return "redirect:/vehiculos/" + vehiculoOpt.get().getPlaca();
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Vehículo con placa " + placa + " no encontrado.");
+            return "redirect:/vehiculos"; // Si no se encuentra, redirige de vuelta a la lista de vehículos con un mensaje de error
+        }
+        
+    }
+    
 
 
     // Maneja la petición GET a /vehiculos/{placa}

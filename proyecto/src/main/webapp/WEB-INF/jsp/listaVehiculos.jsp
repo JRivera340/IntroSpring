@@ -23,6 +23,11 @@
         .nav-links { text-align: center; margin-bottom: 25px; }
         .nav-links a { margin: 0 10px; color: #007bff; text-decoration: none; font-weight: bold; }
         .nav-links a:hover { text-decoration: underline; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="text"] { width: calc(100% - 22px); padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .form-group button { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; }
+        .form-group button:hover { background-color: #218838; }
     </style>
 </head>
 <body>
@@ -41,8 +46,19 @@
             <p class="message-error">${error}</p>
         </c:if>
 
-        <div class="action-buttons"> <%-- Envuelve los botones de acción --%>
-            <a href="<c:url value='/'/>" class="btn btn-primary">Volver al Inicio</a> <%-- ¡AQUÍ ESTÁ EL BOTÓN! --%>
+        <div class="search-form-section" style="margin-bottom: 30px; padding: 20px; background-color: #e9ecef; border-radius: 8px;">
+            <h2>Buscar Vehículo por Placa</h2>
+            <form action="<c:url value='/vehiculos/buscar'/>" method="get">
+                <div class="form-group">
+                    <label for="placaBusqueda">Placa del Vehículo:</label>
+                    <input type="text" id="placaBusqueda" name="placa" placeholder="Ingrese la placa" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Buscar Vehículo</button>
+            </form>
+        </div>
+
+        <div class="action-buttons">
+            <a href="<c:url value='/'/>" class="btn btn-primary">Volver al Inicio</a>
             <a href="<c:url value='/vehiculos/nuevo'/>" class="btn btn-primary">Agregar Nuevo Vehículo</a>
         </div>
 
@@ -58,7 +74,7 @@
                             <th>Cilindraje</th>
                             <th>Tipo Combustible</th>
                             <th>Número de Motor</th>
-                            <th>Conductor Asignado</th> <%-- Aquí buscaremos el conductor --%>
+                            <th>Conductor Asignado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -73,9 +89,8 @@
                                 <td>${vehiculo.tipoCombustible}</td>
                                 <td>${vehiculo.numeroMotor}</td>
                                 <td>
-                                    <%-- Necesitamos un poco de lógica aquí para encontrar el conductor asignado --%>
                                     <c:set var="conductorAsignado" value="${null}"/>
-                                    <c:forEach var="conductor" items="${conductoresDisponibles}"> <%-- Necesitarás pasar todos los conductores a la lista también --%>
+                                    <c:forEach var="conductor" items="${conductoresDisponibles}">
                                         <c:forEach var="v" items="${conductor.vehiculos}">
                                             <c:if test="${v.placa eq vehiculo.placa}">
                                                 <c:set var="conductorAsignado" value="${conductor}"/>

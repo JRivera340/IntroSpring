@@ -22,8 +22,12 @@ public class VehiculoService {
     
 
     //Permite la inyeccion de dependencias
-    public void setConductorService(ConductorService conductorService){
+    public VehiculoService(ConductorService conductorService) {
         this.conductorService = conductorService;
+        // Opcional: Aquí podrías inicializar tus vehículos de prueba si no lo haces en otro lugar
+        // para cumplir con el punto 3 del taller.
+        // Por ejemplo:
+        // inicializarVehiculosDePrueba();
     }
 
     public List<Vehiculo> obtenerTodosLosVehiculos(){
@@ -36,12 +40,6 @@ public class VehiculoService {
         }
 
         return Optional.ofNullable(vehiculosRegistrados.get(placa.trim().toUpperCase()));
-    }
-
-    private void registrarVehiculosGlobalmente(Vehiculo vehiculo){
-        if (vehiculo != null && vehiculo.getPlaca() != null) {
-            vehiculosRegistrados.put(vehiculo.getPlaca().trim().toUpperCase(), vehiculo);
-        }
     }
 
      // --- El método problemático: ASIGNAR un VEHÍCULO EXISTENTE a un CONDUCTOR ---
